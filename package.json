@@ -1,0 +1,36 @@
+{
+  "name": "mcp-jena",
+  "version": "1.0.0",
+  "description": "Model Context Protocol server for Apache Jena SPARQL queries",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
+    "dev:transpile": "ts-node --transpile-only src/index.ts",
+    "build": "tsc --skipLibCheck || true",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "mcp",
+    "jena",
+    "sparql",
+    "semantic-web",
+    "rdf"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.0.1",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.11.0",
+    "@types/node-fetch": "^2.6.11",
+    "axios": "^1.6.8",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "node-fetch": "^2.7.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.2"
+  }
+}
