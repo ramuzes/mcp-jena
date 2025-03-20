@@ -1,4 +1,4 @@
-import JenaClient from '../utils/jena-client';
+import JenaClient from '../utils/jena-client.js';
 
 /**
  * MCP Tool to execute a SPARQL query against Apache Jena
@@ -17,14 +17,18 @@ export const sparqlQueryTool = {
         type: 'string',
         description: 'Dataset name. If not provided, uses the default dataset.',
       },
+      endpoint: {
+        type: 'string',
+        description: 'Fuseki server endpoint. If not provided, uses the default endpoint.',
+      },
     },
     required: ['query'],
   },
-  handler: async (params: { query: string; dataset?: string }) => {
-    const { query, dataset } = params;
+  handler: async (params: { query: string; dataset?: string; endpoint?: string }) => {
+    const { query, dataset, endpoint } = params;
     
     try {
-      const client = new JenaClient(dataset);
+      const client = new JenaClient(endpoint, dataset);
       const result = await client.executeQuery(query);
       
       return {
@@ -58,14 +62,18 @@ export const sparqlUpdateTool = {
         type: 'string',
         description: 'Dataset name. If not provided, uses the default dataset.',
       },
+      endpoint: {
+        type: 'string',
+        description: 'Fuseki server endpoint. If not provided, uses the default endpoint.',
+      },
     },
     required: ['update'],
   },
-  handler: async (params: { update: string; dataset?: string }) => {
-    const { update, dataset } = params;
+  handler: async (params: { update: string; dataset?: string; endpoint?: string }) => {
+    const { update, dataset, endpoint } = params;
     
     try {
-      const client = new JenaClient(dataset);
+      const client = new JenaClient(endpoint, dataset);
       const result = await client.executeUpdate(update);
       
       return {
@@ -95,14 +103,18 @@ export const listGraphsTool = {
         type: 'string',
         description: 'Dataset name. If not provided, uses the default dataset.',
       },
+      endpoint: {
+        type: 'string',
+        description: 'Fuseki server endpoint. If not provided, uses the default endpoint.',
+      },
     },
     required: [],
   },
-  handler: async (params: { dataset?: string }) => {
-    const { dataset } = params;
+  handler: async (params: { dataset?: string; endpoint?: string }) => {
+    const { dataset, endpoint } = params;
     
     try {
-      const client = new JenaClient(dataset);
+      const client = new JenaClient(endpoint, dataset);
       const graphs = await client.listGraphs();
       
       return {

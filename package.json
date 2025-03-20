@@ -3,11 +3,13 @@
   "version": "1.0.0",
   "description": "Model Context Protocol server for Apache Jena SPARQL queries",
   "main": "dist/index.js",
+  "type": "module",
   "scripts": {
     "start": "node dist/index.js",
-    "dev": "ts-node src/index.ts",
-    "dev:transpile": "ts-node --transpile-only src/index.ts",
-    "build": "tsc --skipLibCheck || true",
+    "dev": "ts-node --esm src/index.ts",
+    "dev:transpile": "ts-node --transpile-only --esm src/index.ts",
+    "build": "tsc",
+    "postbuild": "node scripts/fix-imports.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -20,11 +22,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "1.0.1",
+    "@modelcontextprotocol/sdk": "^1.0.0",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/node": "^20.11.0",
     "@types/node-fetch": "^2.6.11",
+    "anthropic": "^0.17.0",
     "axios": "^1.6.8",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",

@@ -8,6 +8,29 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 import JenaClient from "./utils/jena-client.js";
 
+// Parse command line arguments
+const args = process.argv.slice(2);
+let jenaEndpoint = process.env.JENA_FUSEKI_URL || "http://localhost:3030";
+let defaultDataset = process.env.DEFAULT_DATASET || "ds";
+
+// Process CLI arguments
+for (let i = 0; i < args.length; i++) {
+  if (args[i] === "--endpoint" || args[i] === "-e") {
+    if (i + 1 < args.length) {
+      jenaEndpoint = args[i + 1];
+      i++; // Skip the next arg since we used it
+    }
+  } else if (args[i] === "--dataset" || args[i] === "-d") {
+    if (i + 1 < args.length) {
+      defaultDataset = args[i + 1];
+      i++; // Skip the next arg since we used it
+    }
+  }
+}
+
+console.log(`Connecting to Jena endpoint: ${jenaEndpoint}`);
+console.log(`Using default dataset: ${defaultDataset}`);
+
 const server = new Server(
   {
     name: "mcp-jena",
@@ -19,10 +42,6 @@ const server = new Server(
     },
   },
 );
-
-// Get Jena connection details from environment variables
-const jenaUrl = process.env.JENA_FUSEKI_URL || "http://localhost:3030";
-const defaultDataset = process.env.DEFAULT_DATASET || "ds";
 
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
@@ -83,10 +102,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   if (request.params.name === "execute_sparql_query") {
     const query = request.params.arguments?.query as string;
-    const dataset = request.params.arguments?.dataset as string | undefined;
+    const dataset = request.params.arguments?.dataset as string | undefined || defaultDataset;
     
     try {
-      const client = new JenaClient(dataset);
+      const client = new JenaClient(jenaEndpoint, dataset);
       const result = await client.executeQuery(query);
       
       return {
@@ -103,10 +122,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   } 
   else if (request.params.name === "execute_sparql_update") {
     const update = request.params.arguments?.update as string;
-    const dataset = request.params.arguments?.dataset as string | undefined;
+    const dataset = request.params.arguments?.dataset as string | undefined || defaultDataset;
     
     try {
-      const client = new JenaClient(dataset);
+      const client = new JenaClient(jenaEndpoint, dataset);
       const result = await client.executeUpdate(update);
       
       return {
@@ -122,10 +141,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     }
   }
   else if (request.params.name === "list_graphs") {
-    const dataset = request.params.arguments?.dataset as string | undefined;
+    const dataset = request.params.arguments?.dataset as string | undefined || defaultDataset;
     
     try {
-      const client = new JenaClient(dataset);
+      const client = new JenaClient(jenaEndpoint, dataset);
       const graphs = await client.listGraphs();
       
       return {

@@ -34,10 +34,11 @@ export class JenaClient {
 
   /**
    * Creates a new Jena client
+   * @param baseUrl - Jena Fuseki server URL. Defaults to environment variable or 'http://localhost:3030'
    * @param dataset - Dataset name. Defaults to environment variable or 'ds'
    */
-  constructor(dataset = DEFAULT_DATASET) {
-    this.baseUrl = FUSEKI_URL;
+  constructor(baseUrl = FUSEKI_URL, dataset = DEFAULT_DATASET) {
+    this.baseUrl = baseUrl;
     this.dataset = dataset;
   }
 
