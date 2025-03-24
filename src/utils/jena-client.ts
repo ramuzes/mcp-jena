@@ -5,6 +5,8 @@ dotenv.config();
 
 const FUSEKI_URL = process.env.JENA_FUSEKI_URL || 'http://localhost:3030';
 const DEFAULT_DATASET = process.env.DEFAULT_DATASET || 'ds';
+const JENA_USERNAME = process.env.JENA_USERNAME || '';
+const JENA_PASSWORD = process.env.JENA_PASSWORD || '';
 
 /**
  * Represents the result of a SPARQL query
@@ -31,15 +33,26 @@ export interface SparqlResult {
 export class JenaClient {
   private baseUrl: string;
   private dataset: string;
+  private username: string;
+  private password: string;
 
   /**
    * Creates a new Jena client
    * @param baseUrl - Jena Fuseki server URL. Defaults to environment variable or 'http://localhost:3030'
    * @param dataset - Dataset name. Defaults to environment variable or 'ds'
+   * @param username - Username for HTTP Basic authentication. Defaults to environment variable
+   * @param password - Password for HTTP Basic authentication. Defaults to environment variable
    */
-  constructor(baseUrl = FUSEKI_URL, dataset = DEFAULT_DATASET) {
+  constructor(
+    baseUrl = FUSEKI_URL, 
+    dataset = DEFAULT_DATASET, 
+    username = JENA_USERNAME, 
+    password = JENA_PASSWORD
+  ) {
     this.baseUrl = baseUrl;
     this.dataset = dataset;
+    this.username = username;
+    this.password = password;
   }
 
   /**
@@ -49,14 +62,24 @@ export class JenaClient {
    */
   async executeQuery(sparqlQuery: string): Promise<SparqlResult> {
     try {
-      const response = await axios.get(`${this.baseUrl}/${this.dataset}/query`, {
+      const config: any = {
         params: {
           query: sparqlQuery,
         },
         headers: {
           Accept: 'application/sparql-results+json',
         },
-      });
+      };
+
+      // Add authentication if credentials are provided
+      if (this.username && this.password) {
+        config.auth = {
+          username: this.username,
+          password: this.password
+        };
+      }
+
+      const response = await axios.get(`${this.baseUrl}/${this.dataset}/query`, config);
 
       return response.data;
     } catch (error) {
@@ -74,14 +97,24 @@ export class JenaClient {
    */
   async executeUpdate(sparqlUpdate: string): Promise<string> {
     try {
+      const config: any = {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      };
+
+      // Add authentication if credentials are provided
+      if (this.username && this.password) {
+        config.auth = {
+          username: this.username,
+          password: this.password
+        };
+      }
+
       await axios.post(
         `${this.baseUrl}/${this.dataset}/update`,
         new URLSearchParams({ update: sparqlUpdate }),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-        }
+        config
       );
 
       return 'Update successful';

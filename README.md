@@ -11,6 +11,7 @@ This project implements an MCP server that allows AI agents (such as Cursor, Cla
 - Execute SPARQL queries against a Jena Fuseki server
 - Execute SPARQL updates to modify RDF data
 - List available named graphs in the dataset
+- HTTP Basic authentication support for Jena Fuseki
 - Compatible with the Model Context Protocol
 
 ## Prerequisites
@@ -45,22 +46,22 @@ Run the server with default settings (localhost:3030 for Jena, 'ds' for dataset)
 npm start
 ```
 
-Or specify custom Jena endpoint and dataset:
+Or specify custom Jena endpoint, dataset, and authentication credentials:
 
 ```
-npm start -- --endpoint http://your-jena-server:3030 --dataset your_dataset
+npm start -- --endpoint http://your-jena-server:3030 --dataset your_dataset --username your_username --password your_password
 ```
 
 You can also use short flags:
 
 ```
-npm start -- -e http://your-jena-server:3030 -d your_dataset
+npm start -- -e http://your-jena-server:3030 -d your_dataset -u your_username -p your_password
 ```
 
 For development mode with automatic transpilation:
 
 ```
-npm run dev:transpile -- -e http://your-jena-server:3030 -d your_dataset
+npm run dev:transpile -- -e http://your-jena-server:3030 -d your_dataset -u your_username -p your_password
 ```
 
 ## Available Tools
@@ -77,6 +78,10 @@ You can also configure the server using environment variables:
 
 - `JENA_FUSEKI_URL`: URL of your Jena Fuseki server (default: http://localhost:3030)
 - `DEFAULT_DATASET`: Default dataset name (default: ds)
+- `JENA_USERNAME`: Username for HTTP Basic authentication to Jena Fuseki
+- `JENA_PASSWORD`: Password for HTTP Basic authentication to Jena Fuseki
+- `PORT`: Port for the MCP server (for HTTP transport, default: 8080)
+- `API_KEY`: API key for MCP server authentication
 
 ## Example SPARQL Queries
 
@@ -85,18 +90,30 @@ You can also configure the server using environment variables:
 ```sparql
 SELECT ?subject ?predicate ?object
 WHERE {
-  ?subject ?predicate ?object .
+  ?subject ?predicate ?object
 }
 LIMIT 10
 ```
 
-### Query a specific graph:
+### Insert data with UPDATE:
+
+```sparql
+PREFIX ex: <http://example.org/>
+INSERT DATA {
+  ex:subject1 ex:predicate1 "object1" .
+  ex:subject2 ex:predicate2 42 .
+}
+```
+
+### Query a specific named graph:
 
 ```sparql
 SELECT ?subject ?predicate ?object
-FROM <http://example.org/graph>
+FROM NAMED <http://example.org/graph1>
 WHERE {
-  ?subject ?predicate ?object .
+  GRAPH <http://example.org/graph1> {
+    ?subject ?predicate ?object
+  }
 }
 LIMIT 10
 ```
