@@ -64,6 +64,22 @@ For development mode with automatic transpilation:
 npm run dev:transpile -- -e http://your-jena-server:3030 -d your_dataset -u your_username -p your_password
 ```
 
+## Docker
+
+You can run the MCP Jena server using Docker:
+
+### Building the Docker image
+
+```bash
+docker build -t mcp-jena .
+```
+
+### Running with Docker
+
+```bash
+docker run -e JENA_FUSEKI_URL=http://your-jena-server:3030 -e DEFAULT_DATASET=your_dataset mcp-jena
+```
+
 ## Available Tools
 
 This MCP server provides the following tools:
