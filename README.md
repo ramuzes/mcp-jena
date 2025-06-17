@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/ramuzes-mcp-jena-badge.png)](https://mseep.ai/app/ramuzes-mcp-jena)
+
 # MCP Server for Apache Jena
 
 A Model Context Protocol (MCP) server that connects AI agents to Apache Jena for SPARQL query capabilities.
